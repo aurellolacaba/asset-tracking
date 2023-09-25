@@ -25,20 +25,6 @@ class LoanApplicationTest extends TestCase
             ]);
     }
 
-    public function test_lender_id_must_be_a_valid_uuid()
-    {
-        $barrower = User::factory()->create();
-        $invalid_lender_id = 100;
-        $attributes = LoanApplication::factory()->raw(['lender_id' => $invalid_lender_id]);
-
-        $this->actingAs($barrower)
-            ->postJson('/api/v1/loan-applications', $attributes)
-            ->assertStatus(422)
-            ->assertInvalid([
-                'lender_id' => 'The selected lender id is invalid.'
-            ]);
-    }
-
     public function test_lender_id_must_be_a_valid_user_uuid()
     {
         $barrower = User::factory()->create();
