@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
 use App\Models\LoanApplication;
+use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class LoanApplicationTest extends TestCase
@@ -39,11 +40,24 @@ class LoanApplicationTest extends TestCase
             ]);
     }
 
+    public function test_monthly_payment_should_be_valid()
+    {
+        $barrower = User::factory()->create();
+        $attributes = LoanApplication::factory()->raw(['monthly_payment' => '3000']);
+
+        $this->actingAs($barrower)
+            ->postJson('/api/v1/loan-applications', $attributes)
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertInvalid([
+                'monthly_payment' => 'Invalid monthly payment.'
+            ]);
+    }
+
     public function test_barrower_can_apply_for_loan()
     {
         $barrower = User::factory()->create();
         $loan_application = LoanApplication::factory()->raw();
-        dd($loan_application);
+
         $this->actingAs($barrower)
             ->post('/api/v1/loan-applications', $loan_application)
             ->assertStatus(201);

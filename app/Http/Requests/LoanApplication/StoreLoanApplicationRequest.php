@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\LoanApplication;
 
+use App\Rules\MonthlyPaymentValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLoanApplicationRequest extends FormRequest
@@ -44,6 +45,11 @@ class StoreLoanApplicationRequest extends FormRequest
             'term_unit' => [
                 'required',
                 'in:days,months,years'
+            ],
+            'monthly_payment' => [
+                'required',
+                'numeric',
+                new MonthlyPaymentValidation
             ]
         ];
     }
