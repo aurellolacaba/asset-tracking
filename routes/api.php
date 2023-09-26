@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApproveLoanApplicationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -34,8 +35,9 @@ Route::prefix('v1')->group(function () {
     Route::controller(LoanApplicationController::class)->middleware('auth:sanctum')->group(function() {
         Route::get('/loan-applications', 'index');
         Route::post('/loan-applications', 'store');
-        Route::post('/loan-applications/{loan_application}/approve', 'handleApproveLoanRequest');
     });
+
+    Route::patch('/loan-applications/{loan_application}/approve', ApproveLoanApplicationController::class)->middleware('auth:sanctum');
 
     Route::post('/loan-applications/{loan_application}/release', ReleaseController::class)->middleware('auth:sanctum');
     Route::post('/loan-applications/{loan_application}/accept', AcceptController::class)->middleware('auth:sanctum');

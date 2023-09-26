@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\LoanApplicationStatus;
+use Exception;
 
 class LoanApplication extends Model
 {
@@ -39,5 +40,21 @@ class LoanApplication extends Model
 
     public function barrower() {
         return $this->hasOne(User::class, 'id', 'barrower_id');
+    }
+
+    public function approveByLender()
+    {
+        if (auth()->user()->isNot($this->lender)) {
+            throw new \App\Exceptions\AccessForbiddenException();
+        }
+
+        if ($this->approved_by_lender) {
+            throw new Exception('Unable to process request', 400);
+        }
+
+        return $this->update([
+            'approved_by_lender' => true,
+            'status' => LoanApplicationStatus::APPROVED
+        ]);
     }
 }

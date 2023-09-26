@@ -3,28 +3,26 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Http\Response;
 
 class AccessForbiddenException extends Exception
 {
     private $foo;
 
-    public function __construct($foo){
+    public function __construct($foo = ''){
         $this->foo = $foo;
     }
 
     public function render($request)
     {
         return response()->json([
-            'success' => false,
-            'data' => NULL,
+            'message' => 'error',
             'error' => [
                 'code' => 'E001',
                 'message' => 'Access Forbidden',
-                'details' => [
-                    'foo' => $this->foo
-                ]
-            ]
-        ], 403);
+            ],
+            'data' => [],
+        ], Response::HTTP_FORBIDDEN);
     }
 
     public function context()
