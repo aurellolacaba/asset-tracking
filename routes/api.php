@@ -32,6 +32,7 @@ Route::prefix('v1')->group(function () {
     
     //Loan Application
     Route::controller(LoanApplicationController::class)->middleware('auth:sanctum')->group(function() {
+        Route::get('/loan-applications', 'index');
         Route::post('/loan-applications', 'store');
         Route::post('/loan-applications/{loan_application}/approve', 'handleApproveLoanRequest');
     });

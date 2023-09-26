@@ -10,7 +10,6 @@ use App\Events\LoanRequestApproved;
 use App\Enums\LoanApplicationStatus;
 use App\Services\LoanApplicationService;
 use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
 
 class LoanApplicationController extends Controller
 {
@@ -18,6 +17,13 @@ class LoanApplicationController extends Controller
     public function __construct(
         private LoanApplicationService $loanApplicationService
     ){}
+
+    public function index(){
+        $user = auth()->user();
+        $loan_application = $user->loans()->with('barrower', 'lender')->simplePaginate();
+
+        return Response::jsonSuccess($loan_application);
+    }
 
     public function store(StoreLoanApplicationRequest $request)
     {
@@ -49,9 +55,9 @@ class LoanApplicationController extends Controller
         ]);
     }
 
-    // private function onlyLender($auth_user) {
-    //     if (auth()->user()->isNot($auth_user)) {
-    //         throw new \App\Exceptions\AccessForbiddenException('bar');
-    //     }
-    // }
+    private function onlyLender($auth_user) {
+        if (auth()->user()->isNot($auth_user)) {
+            throw new \App\Exceptions\AccessForbiddenException('bar');
+        }
+    }
 }
