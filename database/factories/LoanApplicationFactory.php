@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\LoanApplicationStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 
@@ -23,6 +24,15 @@ class LoanApplicationFactory extends Factory
             'term_unit' => 'months',
             'monthly_payment' => '1000',
             'lender_id' => function () {
+                return User::factory()->create()->id;
+            },
+            'barrower_id' => function () {
+                return User::factory()->create()->id;
+            },
+            'status' => LoanApplicationStatus::PENDING->value,
+            'approved_by_lender' => 0,
+            'approved_by_barrower' => 1,
+            'created_by' => function () {
                 return User::factory()->create()->id;
             }
         ];

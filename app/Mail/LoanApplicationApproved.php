@@ -46,7 +46,7 @@ class LoanApplicationApproved extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.loan_application_approved',
+            markdown: 'emails.loan_application_approved',
         );
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\LoanApplicationStatus;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
 use App\Models\LoanApplication;
 use Illuminate\Http\Response;
@@ -56,7 +56,10 @@ class LoanApplicationTest extends TestCase
     public function test_barrower_can_apply_for_loan()
     {
         $barrower = User::factory()->create();
-        $loan_application = LoanApplication::factory()->raw();
+        $loan_application = LoanApplication::factory()->raw([
+            'barrower_id' => $barrower->id,
+            'created_by' => $barrower->id
+        ]);
 
         $this->actingAs($barrower)
             ->post('/api/v1/loan-applications', $loan_application)
@@ -64,4 +67,19 @@ class LoanApplicationTest extends TestCase
         
         $this->assertDatabaseHas('loan_applications', $loan_application);
     }
+
+    /** @test */
+    public function lender_should_be_able_to_approve_loans()
+    {
+        $lender = User::factory()->create();
+        $loan_application = LoanApplication::factory()->create([
+            'lender_id' => $lender->id
+        ]);
+
+        $this->actingAs($lender)
+            ->patchJson("/api/v1/loan-applications/{$loan_application->id}/approve")
+            ->assertStatus(200);
+
+        $this->assertEquals(LoanApplicationStatus::APPROVED, $loan_application->fresh()->status);
+    } 
 }

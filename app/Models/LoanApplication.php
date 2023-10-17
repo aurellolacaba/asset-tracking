@@ -44,6 +44,11 @@ class LoanApplication extends Model
 
     public function approveByLender()
     {
+        if (!auth()->user())
+        {
+            throw new Exception('Unathenticated');
+        }
+
         if (auth()->user()->isNot($this->lender)) {
             throw new \App\Exceptions\AccessForbiddenException();
         }
